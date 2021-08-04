@@ -1,0 +1,29 @@
+{
+  "name": "eds-enterprise-notes",
+  "version": "1.0.0",
+  "description": "Notes app for our Enterprise Software Developement class.",
+  "main": "index.js",
+  "scripts": {
+    "build": "NODE_ENV=production TAILWIND_MODE=build postcss tailwind.css -o web/static/style.css",
+    "build:dev": "TAILWIND_MODE=build postcss tailwind.css -o web/static/style.css",
+    "watch": "TAILWIND_MODE=watch postcss tailwind.css -o web/static/style.css -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CoryEvans2324/eds-enterprise-notes.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CoryEvans2324/eds-enterprise-notes/issues"
+  },
+  "homepage": "https://github.com/CoryEvans2324/eds-enterprise-notes#readme",
+  "devDependencies": {
+    "autoprefixer": "^10.3.1",
+    "cssnano": "^5.0.7",
+    "postcss": "^8.3.6",
+    "postcss-cli": "^8.3.1",
+    "tailwindcss": "^2.2.7"
+  }
+}
