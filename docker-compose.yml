@@ -1,0 +1,46 @@
+version: '3.4'
+
+services: 
+    db:
+        container_name: enterprise-notes-db
+        image: postgres
+        restart: unless-stopped
+        environment: 
+            POSTGRES_USER: root
+            POSTGRES_PASSWORD: root
+
+        ports: 
+            - "5432:5432"
+        
+    pgadmin:
+        container_name: enterprise-notes-pgadmin
+        image: dpage/pgadmin4
+        restart: unless-stopped
+        environment:
+            PGADMIN_DEFAULT_EMAIL: admin@admin.com
+            PGADMIN_DEFAULT_PASSWORD: root
+
+        ports: 
+            - "5050:80"
+    
+    web:
+        build: .
+
+        container_name: enterprise-notes-web
+        restart: unless-stopped
+
+    nginx:
+        image: ghcr.io/linuxserver/nginx
+        container_name: enterprise-notes-nginx
+        restart: unless-stopped
+        environment: 
+            - PUID=1000
+            - PGID=1000
+            - TZ=Pacific/Auckland
+        
+        volumes: 
+            - "./nginx:/config"
+            - "./web/static:/var/www/notes/static"
+
+        ports: 
+            - "80:80"
