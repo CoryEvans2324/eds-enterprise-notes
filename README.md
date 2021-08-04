@@ -10,6 +10,13 @@ Notes app for our Enterprise Software Developement class.
 |gorilla/mux|https://pkg.go.dev/github.com/gorilla/mux|
 |database/sql|https://pkg.go.dev/database/sql|
 
+
+## Front end interface
+The front end will be html, css & js. [tailwindcss](https://tailwindcss.com/docs) will be used for styling.
+
+NodeJS & NPM needs to be installed.
+Build the css with `npm run build`
+
 ## Information
 ### Valid text patterns for search and analysis features
 - a sentence with a given prefix and/or suffix.
