@@ -13,3 +13,7 @@ func LoadConfig(data []byte) error {
 func Get() *Config {
 	return &configInstance
 }
+
+func Set(cfg Config) {
+	configInstance = cfg
+}

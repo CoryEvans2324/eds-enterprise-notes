@@ -27,3 +27,25 @@ server:
 		t.Fatalf("Failed database source string with error: %v", err)
 	}
 }
+
+func TestSet(t *testing.T) {
+	cfg := Config{
+		Database: Database{
+			Host:     "localhost",
+			Port:     5432,
+			Username: "testing",
+			Password: "testing",
+			DBName:   "testing",
+		},
+		Server: Server{
+			Address:      ":8000",
+			StaticFolder: "web/static/",
+		},
+	}
+
+	Set(cfg)
+
+	if configInstance != cfg {
+		t.Error("Didn't set config")
+	}
+}
