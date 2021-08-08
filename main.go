@@ -8,5 +8,5 @@ func main() {
 	baseLayout := templates.NewTemplateList("base.layout.html")
 	indexTemplate := baseLayout.Extend("index.html")
 
-	templates.CreateTemplate("index", *indexTemplate)
+	templates.CreateTemplate("index", indexTemplate)
 }

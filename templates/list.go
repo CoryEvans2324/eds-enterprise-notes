@@ -1,6 +1,7 @@
 package templates
 
 import (
+	"fmt"
 	"html/template"
 )
 
@@ -46,24 +47,24 @@ func (tl *TemplateList) Extend(filename string) *TemplateList {
 	return &newList
 }
 
-func (tl *TemplateList) CreateHtmlTemplate() *template.Template {
+func (tl *TemplateList) CreateHtmlTemplate() (*template.Template, error) {
 	if tl.Head == nil {
-		return nil
+		return nil, fmt.Errorf("template list has no elements")
 	}
 
 	files := make([]string, tl.Length)
 
 	cur := tl.Head
-	for cur != nil {
+	for i := 0; i < tl.Length; i++ {
 		// TODO: load templates folder location from config
-		files = append(files, "web/templates/"+cur.filename)
+		files[i] = "web/templates/" + cur.filename
 		cur = cur.parent
 	}
 
 	tmpl, err := template.ParseFiles(files...)
 	if err != nil {
-		return nil
+		return nil, fmt.Errorf("error parsing files")
 	}
 
-	return tmpl
+	return tmpl, nil
 }
