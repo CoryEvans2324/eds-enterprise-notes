@@ -1,0 +1,9 @@
+database:
+  host: 0.0.0.0
+  port: 5432
+  username: username
+  password: password
+  dbname: golang
+server:
+  address: ":8000"
+  staticFolder: web/static/
