@@ -21,10 +21,14 @@ func init() {
 
 func main() {
 	cfg := config.Get()
-	r := mux.NewRouter()
+	r := mux.NewRouter().StrictSlash(true)
 	r.HandleFunc("/", routes.Index)
 
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(cfg.Server.StaticFolder))))
+
+	userRouter := r.PathPrefix("/user").Subrouter()
+	userRouter.HandleFunc("/signin", routes.UserSignIn)
+	userRouter.HandleFunc("/create", routes.UserSignUp)
 
 	srv := &http.Server{
 		Handler:      r,
