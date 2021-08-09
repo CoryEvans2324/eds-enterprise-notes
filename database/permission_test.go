@@ -55,4 +55,17 @@ func TestPermissions(t *testing.T) {
 	if len(returnedNote.SharedUsers) == 0 {
 		t.Error("Note SharedUsers list is empty")
 	}
+
+	// remove the permission
+	err = Mgr.RemovePermission(noteID, otherID)
+	checkErrNil(t, err)
+
+	// create
+	err = Mgr.CreatePermission(noteID, otherID, "editor")
+	checkErrNil(t, err)
+
+	// update
+	err = Mgr.UpdatePermission(noteID, otherID, "viewer")
+	checkErrNil(t, err)
+
 }

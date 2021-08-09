@@ -2,7 +2,7 @@ package database
 
 func (dbm *databasemanager) CreatePermission(noteID, userID int, permission string) error {
 	_, err := dbm.db.Exec(
-		`INSERT INTO notePermission (noteID, userID, permission VALUES ($1, $2, $3)`,
+		`INSERT INTO notePermission (noteID, userID, permission) VALUES ($1, $2, $3)`,
 		noteID,
 		userID,
 		permission,
