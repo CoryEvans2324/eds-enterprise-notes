@@ -4,9 +4,9 @@ func (dbm *databasemanager) CreateUserTable() error {
 	_, err := dbm.db.Exec(`
 CREATE TABLE noteUser (
 	userID SERIAL PRIMARY KEY,
-	username varchar NOT NULL UNIQUE,
-	passwordHash varchar NOT NULL,
-	userRole varchar DEFAULT 'user'
+	username VARCHAR NOT NULL UNIQUE,
+	passwordHash VARCHAR NOT NULL,
+	userRole VARCHAR DEFAULT 'user'
 )
 `)
 	return err
@@ -14,5 +14,25 @@ CREATE TABLE noteUser (
 
 func (dbm *databasemanager) DropUserTable() error {
 	_, err := dbm.db.Exec(`DROP TABLE IF EXISTS noteUser`)
+	return err
+}
+
+func (dbm *databasemanager) CreateNoteTable() error {
+	_, err := dbm.db.Exec(`
+CREATE TABLE note (
+	noteID SERIAL PRIMARY KEY,
+	name VARCHAR,
+	content VARCHAR,
+	status VARCHAR,
+	ownerID INTEGER,
+	dueDate TIMESTAMP,
+	delegatedUserID INTEGER DEFAULT -1
+)
+`)
+	return err
+}
+
+func (dbm *databasemanager) DropNoteTable() error {
+	_, err := dbm.db.Exec(`DROP TABLE IF EXISTS note`)
 	return err
 }

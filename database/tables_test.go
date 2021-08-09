@@ -20,7 +20,11 @@ func TestRecreateTables(t *testing.T) {
 
 	err := Mgr.DropUserTable()
 	checkErrNil(t, err)
-
 	err = Mgr.CreateUserTable()
+	checkErrNil(t, err)
+
+	err = Mgr.DropNoteTable()
+	checkErrNil(t, err)
+	err = Mgr.CreateNoteTable()
 	checkErrNil(t, err)
 }
