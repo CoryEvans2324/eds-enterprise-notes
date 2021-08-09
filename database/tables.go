@@ -4,9 +4,9 @@ func (dbm *databasemanager) CreateUserTable() error {
 	_, err := dbm.db.Exec(`
 CREATE TABLE noteUser (
 	userID SERIAL PRIMARY KEY,
-	username varchar UNIQUE,
-	passwordHash varchar,
-	userRole varchar
+	username varchar NOT NULL UNIQUE,
+	passwordHash varchar NOT NULL,
+	userRole varchar DEFAULT 'user'
 )
 `)
 	return err
