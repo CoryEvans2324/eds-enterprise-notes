@@ -9,8 +9,24 @@
 	<link rel="stylesheet" href="/static/style.css">
 	{{ template "head" . }}
 </head>
-<body>
-	{{ template "content" . }}
+<body class="bg-gray-200">
+	<nav class="bg-blue-600 text-white font-semibold tracking-wide shadow">
+		<ul class="flex max-w-3xl mx-auto py-2">
+			<li>
+				<a href="/" class="block px-4 py-2 hover:text-blue-100">Home</a>
+			</li>
+			<div class="flex-1"></div>
+			<li>
+				<a href="/user/signin" class="block px-4 py-2 hover:text-blue-100">Sign In</a>
+			</li>
+			<li>
+				<a href="/user/create" class="block px-8 py-2 hover:bg-white hover:text-blue-600 rounded border-2 border-white">Sign Up</a>
+			</li>
+		</ul>
+	</nav>
+	<div>
+		{{ template "content" . }}
+	</div>
 </body>
 </html>
 {{ end }}
