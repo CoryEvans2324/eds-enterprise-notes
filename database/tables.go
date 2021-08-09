@@ -36,3 +36,19 @@ func (dbm *databasemanager) DropNoteTable() error {
 	_, err := dbm.db.Exec(`DROP TABLE IF EXISTS note`)
 	return err
 }
+
+func (dbm *databasemanager) CreatePermissionTable() error {
+	_, err := dbm.db.Exec(`
+CREATE TABLE notePermission (
+	noteID INTEGER,
+	userID INTEGER,
+	permission VARCHAR
+)
+`)
+	return err
+}
+
+func (dbm *databasemanager) DropPermissionTable() error {
+	_, err := dbm.db.Exec(`DROP TABLE IF EXISTS notePermission`)
+	return err
+}

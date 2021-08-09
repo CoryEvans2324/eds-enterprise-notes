@@ -11,16 +11,24 @@ type DatabaseManager interface {
 	Close()
 	DropUserTable() error
 	CreateUserTable() error
-	CreateNoteTable() error
-	DropNoteTable() error
 
-	InsertUser(username, password string) (int, error)
+	DropNoteTable() error
+	CreateNoteTable() error
+
+	CreatePermissionTable() error
+	DropPermissionTable() error
+
+	CreateUser(username, password string) (int, error)
 	GetUserByID(userID int) (*models.User, error)
 	GetUserByUsername(username string) (*models.User, error)
 	GetPasswordHash(username string) (string, error)
 
-	InsertNote(note models.Note) (int, error)
+	CreateNote(note models.Note) (int, error)
 	GetNoteByID(noteID int) (*models.Note, error)
+
+	CreatePermission(noteID, userID int, permission string) error
+	RemovePermission(noteID, userID int) error
+	UpdatePermission(noteID, userID int, permission string) error
 }
 
 type databasemanager struct {

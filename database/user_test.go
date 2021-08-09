@@ -12,7 +12,7 @@ func TestUser(t *testing.T) {
 	Mgr.DropUserTable()
 	Mgr.CreateUserTable()
 
-	userId, err := Mgr.InsertUser(dummyUsername, dummyPassword)
+	userId, err := Mgr.CreateUser(dummyUsername, dummyPassword)
 	checkErrNil(t, err)
 
 	_, err = Mgr.GetUserByID(userId)
@@ -42,7 +42,7 @@ func TestUserPasswords(t *testing.T) {
 	Mgr.DropUserTable()
 	Mgr.CreateUserTable()
 
-	userId, _ := Mgr.InsertUser(dummyUsername, dummyPassword)
+	userId, _ := Mgr.CreateUser(dummyUsername, dummyPassword)
 
 	user, _ := Mgr.GetUserByID(userId)
 

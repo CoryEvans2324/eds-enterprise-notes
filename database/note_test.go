@@ -16,7 +16,7 @@ func TestNote(t *testing.T) {
 	Mgr.DropNoteTable()
 	Mgr.CreateNoteTable()
 
-	userId, err := Mgr.InsertUser("test", "test")
+	userId, err := Mgr.CreateUser("test", "test")
 	owner, _ := Mgr.GetUserByID(userId)
 	checkErrNil(t, err)
 
@@ -29,7 +29,7 @@ func TestNote(t *testing.T) {
 	}
 
 	// Without delegated user
-	noteID, err := Mgr.InsertNote(note)
+	noteID, err := Mgr.CreateNote(note)
 	checkErrNil(t, err)
 
 	noteReturned, err := Mgr.GetNoteByID(noteID)
@@ -40,13 +40,13 @@ func TestNote(t *testing.T) {
 	}
 
 	// With delegated user
-	deleID, _ := Mgr.InsertUser("deleUser", "test")
+	deleID, _ := Mgr.CreateUser("deleUser", "test")
 
 	dele, _ := Mgr.GetUserByID(deleID)
 
 	note.DelegatedUser = dele
 
-	noteID, err = Mgr.InsertNote(note)
+	noteID, err = Mgr.CreateNote(note)
 	checkErrNil(t, err)
 
 	noteReturned, err = Mgr.GetNoteByID(noteID)
@@ -67,7 +67,7 @@ func TestNote(t *testing.T) {
 		UserID: 234567890,
 	}
 
-	id, err := Mgr.InsertNote(note)
+	id, err := Mgr.CreateNote(note)
 	checkErrNil(t, err)
 	_, err = Mgr.GetNoteByID(id)
 	if err == nil {
@@ -78,7 +78,7 @@ func TestNote(t *testing.T) {
 		UserID: 6782390,
 	}
 
-	id, err = Mgr.InsertNote(note)
+	id, err = Mgr.CreateNote(note)
 	checkErrNil(t, err)
 	_, err = Mgr.GetNoteByID(id)
 	if err == nil {

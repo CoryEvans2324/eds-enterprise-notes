@@ -8,7 +8,7 @@ import (
 
 const NilDelegatedUserValue = -1
 
-func (dbm *databasemanager) InsertNote(note models.Note) (int, error) {
+func (dbm *databasemanager) CreateNote(note models.Note) (int, error) {
 	var delegatedUserID int
 	if note.DelegatedUser == nil {
 		delegatedUserID = NilDelegatedUserValue
@@ -16,7 +16,8 @@ func (dbm *databasemanager) InsertNote(note models.Note) (int, error) {
 		delegatedUserID = note.DelegatedUser.UserID
 	}
 
-	row := dbm.db.QueryRow(`
+	tx, _ := dbm.db.Begin()
+	row := tx.QueryRow(`
 INSERT INTO note (name, content, status, ownerID, dueDate, delegatedUserID)
 VALUES ($1, $2, $3, $4, $5, $6) RETURNING noteID`,
 		note.Name,
@@ -29,8 +30,24 @@ VALUES ($1, $2, $3, $4, $5, $6) RETURNING noteID`,
 
 	var noteID int
 	err := row.Scan(&noteID)
+	if err != nil {
+		// rollback and return
+		tx.Rollback()
+		return noteID, err
+	}
 
-	return noteID, err
+	stmt, _ := tx.Prepare(`INSERT INTO notePermission (noteID, userID, permission) VALUES ($1, $2, $3)`)
+	for _, permission := range note.SharedUsers {
+		_, err := stmt.Exec(noteID, permission.User.UserID, permission.Permission)
+		if err != nil {
+			tx.Rollback()
+			return noteID, err
+		}
+	}
+
+	tx.Commit()
+
+	return noteID, nil
 }
 
 func (dbm *databasemanager) GetNoteByID(noteID int) (*models.Note, error) {
@@ -64,6 +81,26 @@ WHERE noteID = $1`, noteID)
 		}
 
 		note.DelegatedUser = dele
+	}
+
+	// get the list of permissions
+	rows, err := dbm.db.Query(`
+SELECT noteUser.UserID, noteUser.Username, noteUser.userRole, notePermission.permission from note
+JOIN notePermission ON note.noteID = notePermission.noteID
+JOIN noteUser ON notePermission.UserID = noteUser.userID
+WHERE note.noteID = $1
+`,
+		noteID,
+	)
+
+	if err != nil {
+		return note, err
+	}
+
+	for rows.Next() {
+		var permission models.Permission
+		rows.Scan(&permission.User.UserID, &permission.User.Username, &permission.User.Role, &permission.Permission)
+		note.SharedUsers = append(note.SharedUsers, permission)
 	}
 
 	return note, nil

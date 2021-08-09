@@ -2,7 +2,7 @@ package database
 
 import "github.com/CoryEvans2324/eds-enterprise-notes/models"
 
-func (dbm *databasemanager) InsertUser(username, password string) (int, error) {
+func (dbm *databasemanager) CreateUser(username, password string) (int, error) {
 	hash, _ := HashPassword(password)
 	row := dbm.db.QueryRow(`INSERT INTO noteUser (username, passwordHash) VALUES ($1, $2) RETURNING userID`, username, hash)
 
