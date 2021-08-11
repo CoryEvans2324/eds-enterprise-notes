@@ -8,6 +8,7 @@ services:
         environment: 
             POSTGRES_USER: root
             POSTGRES_PASSWORD: root
+            POSTGRES_DB: enterprisenotes
 
         ports: 
             - "5432:5432"
@@ -29,18 +30,8 @@ services:
         container_name: enterprise-notes-web
         restart: unless-stopped
 
-    nginx:
-        image: ghcr.io/linuxserver/nginx
-        container_name: enterprise-notes-nginx
-        restart: unless-stopped
-        environment: 
-            - PUID=1000
-            - PGID=1000
-            - TZ=Pacific/Auckland
-        
         volumes: 
-            - "./nginx:/config"
-            - "./web/static:/var/www/notes/static"
+            - "./config.docker.yml:/app/config.yml:ro"
 
         ports: 
-            - "80:80"
+            - "8080:80"

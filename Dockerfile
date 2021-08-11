@@ -11,17 +11,35 @@ COPY config/ ./config/
 COPY database/ ./database/
 COPY middleware/ ./middleware/
 COPY models/ ./models/
-COPY templates/ ./templates/
+COPY routes/ ./routes/
 
-RUN go build -o /server .
+COPY main.go ./
 
+RUN go build -o /server main.go
+
+# Build the style sheet
+FROM node:16-alpine3.14 AS nodebuild
+
+WORKDIR /data
+COPY package*.json ./
+
+RUN npm ci
+
+COPY tailwind.css ./
+COPY *.config.js ./
+COPY web/ ./web/
+
+RUN npm run build
 
 # The image that runs the application
 FROM alpine:latest
 
-COPY --from=build /server /server
-COPY web/ /web/
+WORKDIR /app
 
-EXPOSE 8000
+COPY --from=build /server ./
+COPY web/ ./web/
+COPY --from=nodebuild /data/web/static/style.css ./web/static/style.css
 
-ENTRYPOINT [ "/server" ]
+EXPOSE 80
+
+ENTRYPOINT [ "./server" ]

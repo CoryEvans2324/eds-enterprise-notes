@@ -1,0 +1,9 @@
+database:
+  host: db
+  port: 5432
+  username: root
+  password: root
+  dbname: enterprisenotes
+server:
+  address: ":80"
+  staticFolder: web/static/
