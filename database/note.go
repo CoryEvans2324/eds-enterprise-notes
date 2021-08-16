@@ -16,7 +16,10 @@ func (dbm *databasemanager) CreateNote(note models.Note) (int, error) {
 		delegatedUserID = note.DelegatedUser.UserID
 	}
 
-	tx, _ := dbm.db.Begin()
+	tx, err := dbm.db.Begin()
+	if err != nil {
+		return 0, err
+	}
 	row := tx.QueryRow(`
 INSERT INTO note (name, content, status, ownerID, dueDate, delegatedUserID)
 VALUES ($1, $2, $3, $4, $5, $6) RETURNING noteID`,
@@ -29,7 +32,7 @@ VALUES ($1, $2, $3, $4, $5, $6) RETURNING noteID`,
 	)
 
 	var noteID int
-	err := row.Scan(&noteID)
+	err = row.Scan(&noteID)
 	if err != nil {
 		// rollback and return
 		tx.Rollback()
@@ -45,9 +48,9 @@ VALUES ($1, $2, $3, $4, $5, $6) RETURNING noteID`,
 		}
 	}
 
-	tx.Commit()
+	err = tx.Commit()
 
-	return noteID, nil
+	return noteID, err
 }
 
 func (dbm *databasemanager) GetNoteByID(noteID int) (*models.Note, error) {

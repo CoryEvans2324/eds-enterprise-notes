@@ -15,6 +15,8 @@ func TestNote(t *testing.T) {
 	Mgr.CreateUserTable()
 	Mgr.DropNoteTable()
 	Mgr.CreateNoteTable()
+	Mgr.DropPermissionTable()
+	Mgr.CreatePermissionTable()
 
 	userId, err := Mgr.CreateUser("test", "test")
 	owner, _ := Mgr.GetUserByID(userId)
@@ -31,9 +33,11 @@ func TestNote(t *testing.T) {
 	// Without delegated user
 	noteID, err := Mgr.CreateNote(note)
 	checkErrNil(t, err)
+	t.Log(noteID, err)
 
 	noteReturned, err := Mgr.GetNoteByID(noteID)
 	checkErrNil(t, err)
+	t.Log(noteReturned, err)
 
 	if noteReturned.DelegatedUser != nil {
 		t.Error("Delegated user should have been nil")
