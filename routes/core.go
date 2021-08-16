@@ -17,7 +17,6 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user := middleware.GetUser(r)
-	log.Println(user)
 
 	tmpl.Execute(w, struct{ User *models.User }{User: user})
 }

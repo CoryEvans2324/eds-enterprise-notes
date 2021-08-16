@@ -73,3 +73,8 @@ func UserSignUp(w http.ResponseWriter, r *http.Request) {
 	middleware.SetUser(w, user)
 	http.Redirect(w, r, "/", http.StatusFound)
 }
+
+func UserSignOut(w http.ResponseWriter, r *http.Request) {
+	middleware.SetUser(w, nil)
+	http.Redirect(w, r, "/", http.StatusFound)
+}
