@@ -5,6 +5,7 @@ import "fmt"
 type Config struct {
 	Database Database `yaml:"database"`
 	Server   Server   `yaml:"server"`
+	Secret   string   `yaml:"secret"`
 }
 
 type Database struct {
@@ -22,4 +23,8 @@ type Server struct {
 
 func (d *Database) DataSourceName() string {
 	return fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", d.Host, d.Port, d.Username, d.Password, d.DBName)
+}
+
+func (c *Config) SecretAsBytes() []byte {
+	return []byte(c.Secret)
 }

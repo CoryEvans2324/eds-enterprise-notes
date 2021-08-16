@@ -7,3 +7,4 @@ database:
 server:
   address: ":80"
   staticFolder: web/static/
+secret: 5f982a5640b65aef316435c8555f2ff2
