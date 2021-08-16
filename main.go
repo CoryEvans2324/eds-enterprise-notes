@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"github.com/CoryEvans2324/eds-enterprise-notes/config"
+	"github.com/CoryEvans2324/eds-enterprise-notes/database"
+	"github.com/CoryEvans2324/eds-enterprise-notes/middleware"
 	"github.com/CoryEvans2324/eds-enterprise-notes/routes"
 	"github.com/gorilla/mux"
 )
@@ -17,11 +19,15 @@ func init() {
 		log.Fatalln(err.Error())
 	}
 	config.LoadConfig(cfgData)
+	database.CreateDatabaseManager(config.Get().Database.DataSourceName())
 }
 
 func main() {
 	cfg := config.Get()
 	r := mux.NewRouter().StrictSlash(true)
+
+	r.Use(middleware.JWTMiddleware)
+
 	r.HandleFunc("/", routes.Index)
 
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(cfg.Server.StaticFolder))))

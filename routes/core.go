@@ -4,6 +4,9 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+
+	"github.com/CoryEvans2324/eds-enterprise-notes/middleware"
+	"github.com/CoryEvans2324/eds-enterprise-notes/models"
 )
 
 func Index(w http.ResponseWriter, r *http.Request) {
@@ -13,5 +16,8 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("Index: %v\n", err)
 	}
 
-	tmpl.Execute(w, nil)
+	user := middleware.GetUser(r)
+	log.Println(user)
+
+	tmpl.Execute(w, struct{ User *models.User }{User: user})
 }
