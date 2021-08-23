@@ -1,0 +1,48 @@
+{{ template "base" . }}
+
+{{ define "title" }}Create A Note{{ end }}
+
+{{ define "head" }}
+{{ end }}
+
+{{ define "content" }}
+<div class="min-w-[400px] mt-8 bg-white rounded shadow p-4 flex flex-col space-y-3">
+	<h1 class="border-b border-black">{{ .Note.Name }}</h1>
+	<p class="p-2 border-b border-black min-h-[250px]">{{ .Note.Content }}</p>
+	<div class="flex justify-between">
+		<h2>{{ .Note.Status }}</h2>
+		<h2>Owner: <a class="underline" href="/user/@{{ .Note.Owner.Username }}">{{ .Note.Owner.Username }}</a></h2>
+	</div>
+	{{ if .Note.DelegatedUser }}
+	<h2>Delegated User: {{ .Note.DelegatedUser.Username }}</h2>
+	{{ end }}
+
+	<h2 class="text-center border-b border-black mb-2">SharedUsers</h2>
+	<ul>
+		{{ range .Note.SharedUsers }}
+			<li class="flex space-x-2">
+				{{ if eq .Permission "editor"}}
+				<svg xmlns="http://www.w3.org/2000/svg" class="text-green-600" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+					<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+					<path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4"></path>
+					<line x1="13.5" y1="6.5" x2="17.5" y2="10.5"></line>
+				 </svg>
+				{{ else }}
+				<svg xmlns="http://www.w3.org/2000/svg" class="text-blue-600" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+					<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+					<circle cx="12" cy="12" r="2"></circle>
+					<path d="M22 12c-2.667 4.667 -6 7 -10 7s-7.333 -2.333 -10 -7c2.667 -4.667 6 -7 10 -7s7.333 2.333 10 7"></path>
+				 </svg>
+				{{ end }}
+				<a class="underline" href="/user/@{{ .User.Username }}">{{ .User.Username }}</a>
+			</li>
+		{{ end }}
+	</ul>
+
+	<div class="grid grid-cols-2 gap-2">
+		<button class=" px-4 py-2 rounded-sm shadow-sm font-semibold bg-red-500">Delete</button>
+		<button class=" px-4 py-2 rounded-sm shadow-sm font-semibold bg-green-500">Edit</button>
+		<button class="col-span-full px-4 py-2 rounded-sm shadow-sm font-semibold bg-blue-600 text-white">Mark Complete</button>
+	</div>
+</div>
+{{ end }}

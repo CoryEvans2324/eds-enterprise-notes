@@ -40,6 +40,7 @@ func main() {
 
 	noteRouter := r.PathPrefix("/note").Subrouter()
 	noteRouter.HandleFunc("/create", routes.CreateNote)
+	noteRouter.HandleFunc("/{id:[0-9]+}", routes.GetNote)
 
 	debugRouter := r.PathPrefix("/debug").Subrouter()
 	debugRouter.HandleFunc("/reset", routes.DebugResetDB)
