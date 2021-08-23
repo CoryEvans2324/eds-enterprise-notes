@@ -36,6 +36,14 @@ func main() {
 	userRouter.HandleFunc("/signin", routes.UserSignIn)
 	userRouter.HandleFunc("/signout", routes.UserSignOut)
 	userRouter.HandleFunc("/create", routes.UserSignUp)
+	userRouter.HandleFunc("/search", routes.UserSearch)
+
+	noteRouter := r.PathPrefix("/note").Subrouter()
+	noteRouter.HandleFunc("/create", routes.CreateNote)
+
+	debugRouter := r.PathPrefix("/debug").Subrouter()
+	debugRouter.HandleFunc("/reset", routes.DebugResetDB)
+	debugRouter.HandleFunc("/createusers", routes.DebugCreateDummyUsers)
 
 	srv := &http.Server{
 		Handler:      r,

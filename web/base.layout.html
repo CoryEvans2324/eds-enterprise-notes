@@ -8,6 +8,7 @@
 	<title>Enterprise Notes - {{ template "title" . }}</title>
 	<link rel="stylesheet" href="/static/style.css">
 	<script defer src="/static/alpine.js"></script>
+	<script src="/static/htmx.min.js"></script>
 	{{ template "head" . }}
 </head>
 <body class="bg-gray-200">
@@ -16,6 +17,11 @@
 			<li>
 				<a href="/" class="block px-4 py-2 hover:text-blue-100">Home</a>
 			</li>
+			{{ if .User }}
+			<li>
+				<a href="/note/create" class="block px-4 py-2 hover:text-blue-100">Create A Note</a>
+			</li>
+			{{ end }}
 			<div class="flex-1"></div>
 			{{ if .User }}
 			<li>

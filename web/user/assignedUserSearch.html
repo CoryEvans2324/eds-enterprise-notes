@@ -1,0 +1,3 @@
+<ul class="flex flex-col">
+	{{ range .Usernames }}<li class="hover:cursor-pointer px-2 py-1" @click="searchResultClicked('{{ .Username }}')">{{ .Username }}</li>{{ end }}
+</ul>

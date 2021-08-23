@@ -1,6 +1,8 @@
 package database
 
-import "github.com/CoryEvans2324/eds-enterprise-notes/models"
+import (
+	"github.com/CoryEvans2324/eds-enterprise-notes/models"
+)
 
 func (dbm *databasemanager) CreateUser(username, password string) (int, error) {
 	hash, _ := HashPassword(password)
@@ -43,4 +45,24 @@ func (dbm *databasemanager) GetPasswordHash(username string) (string, error) {
 	err := row.Scan(&hash)
 
 	return hash, err
+}
+
+func (dbm *databasemanager) SearchForUsername(username string) ([]string, error) {
+	rows, err := dbm.db.Query(`SELECT username FROM noteUser WHERE LOWER(username) LIKE LOWER('%' || $1 || '%') LIMIT 10`, username)
+	if err != nil {
+		return nil, err
+	}
+
+	var usernames = make([]string, 0)
+	for rows.Next() {
+		var u string
+		err = rows.Scan(&u)
+		if err != nil {
+			return usernames, err
+		}
+
+		usernames = append(usernames, u)
+	}
+
+	return usernames, nil
 }

@@ -22,6 +22,7 @@ type DatabaseManager interface {
 	GetUserByID(userID int) (*models.User, error)
 	GetUserByUsername(username string) (*models.User, error)
 	GetPasswordHash(username string) (string, error)
+	SearchForUsername(username string) ([]string, error)
 
 	CreateNote(note models.Note) (int, error)
 	GetNoteByID(noteID int) (*models.Note, error)

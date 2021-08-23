@@ -1,0 +1,159 @@
+{{ template "base" . }}
+
+{{ define "title" }}Create A Note{{ end }}
+
+{{ define "head" }}
+<script>
+	Date.prototype.toDateInputValue = (function() {
+		var local = new Date(this);
+		local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+		return local.toJSON().slice(0,10);
+	});
+
+	const noteForm = () => {
+		return {
+			date: new Date().toDateInputValue(),
+			assignedUser: '',
+			sharedUsers: [],
+			onSubmit(value) {
+				document.querySelector('#sharedUsersValueStore').value = JSON.stringify(this.sharedUsers)
+			},
+			removeSharedUser(username) {
+				let i = 0
+				while (i < this.sharedUsers.length) {
+					if (this.sharedUsers[i].username === username) {
+						this.sharedUsers.splice(i, 1)
+					} else {
+						i++
+					}
+				}
+			}
+		}
+	}
+
+	const assignedUserData = () => {
+		return {
+			searchResultClicked(username) {
+				this.assignedUser = username
+				this.$refs.assignedSearchResults.innerHTML = ''
+			}
+		}
+	}
+
+	const sharedUserData = () => {
+		return {
+			search: '',
+			searchResultClicked(username) {
+				this.sharedUsers.push({
+					username: username,
+					editor: false,
+				})
+				this.$refs.sharedSearchResults.innerHTML = ''
+				this.search == ''
+			}
+		}
+	}
+</script>
+{{ end }}
+
+{{ define "content" }}
+<div class="bg-white rounded shadow mt-8">
+	<div class="px-10 pt-4 pb-8">
+		<form method="post" class="min-w-[350px] flex flex-col space-y-3" x-data="noteForm()" x-on:submit="onSubmit()">
+			<div class="flex flex-col">
+				<label for="notetitle">Title</label>
+				<input type="text" name="notetitle" id="notetitle" class="border-b-2 border-black">
+			</div>
+
+			<div class="flex flex-col">
+				<label for="notecontent">Content</label>
+				<textarea name="notecontent" id="notecontent" rows="4"></textarea>
+			</div>
+
+			<div class="flex">
+				<input type="date" name="date" id="date" class="flex-1" x-model="date">
+				<input type="time" name="time" id="time" class="flex-1">
+			</div>
+
+			<div class="flex flex-col relative" x-data="assignedUserData()">
+				<label for="assigned">Assigned User</label>
+				<input type="text" name="assignedUser" id="assigned" x-model="assignedUser" class="border-b-2 border-black"
+					hx-get="/user/search"
+					hx-trigger="keyup changed delay:400ms"
+					hx-target="#assignedSearchResults"
+				>
+
+				<div id="assignedSearchResults" @click.away="$refs.assignedSearchResults.innerHTML = ''" x-ref="assignedSearchResults" class="absolute top-full bg-white left-0 right-0 z-10"></div>
+			</div>
+
+			<div class="flex flex-col" x-data="sharedUserData()">
+				<label for="sharedSearch">Shared Users</label>
+				<input type="text" id="sharedSearch" class="border-b-2 border-black" x-model="search"
+					hx-get="/user/search"
+					hx-trigger="keyup changed delay:400ms"
+					hx-target="#sharedSearchResults"
+				>
+				<input type="hidden" name="sharedUsers" id="sharedUsersValueStore">
+				<div class="relative">
+					<div id="sharedSearchResults" @click.away="$refs.sharedSearchResults.innerHTML = ''" x-ref="sharedSearchResults" class="absolute top-full left-0 right-0 bg-white"></div>
+				</div>
+
+				<ul class="flex flex-col mt-2">
+					<template x-for="user in sharedUsers">
+						<div class="flex">
+							<span x-text="user.username" class="flex-1"></span>
+
+							<svg xmlns="http://www.w3.org/2000/svg" @click="user.editor = !user.editor;" class="hover:cursor-pointer" x-bind:stroke="user.editor ? 'rgb(16, 185, 129)' : 'rgb(107, 114, 128)'" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+								<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+								<path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4"></path>
+								<line x1="13.5" y1="6.5" x2="17.5" y2="10.5"></line>
+							</svg>
+
+							<svg  xmlns="http://www.w3.org/2000/svg" @click="removeSharedUser(user.username)" class="hover:cursor-pointer text-red-600" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+								<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+								<line x1="18" y1="6" x2="6" y2="18"></line>
+								<line x1="6" y1="6" x2="18" y2="18"></line>
+							 </svg>
+						</div>
+					</template>
+				</ul>
+			</div>
+
+			<div></div>
+
+			<button type="submit" class="bg-blue-600 text-white font-semibold tracking-wide p-2 rounded shadow">
+				Submit
+			</button>
+		</form>
+	</div>
+</div>
+<script>
+	document.body.addEventListener('htmx:configRequest', (evt) => {
+		srcEle = evt.detail.elt
+		switch (srcEle) {
+			case document.querySelector('#assigned'):
+				evt.detail.parameters = {
+					username: srcEle.value,
+					for: 'assignment'
+				}
+				break;
+
+			case document.querySelector('#sharedSearch'):
+				evt.detail.parameters = {
+					username: srcEle.value,
+					for: 'sharing'
+				}
+				break;
+		
+			default:
+				break;
+		}
+	})
+
+	document.body.addEventListener('htmx:beforeRequest', (evt) => {
+		if (evt.detail.requestConfig.parameters.username == '') {
+			evt.preventDefault()
+		}
+	})
+</script>
+{{ end }}
