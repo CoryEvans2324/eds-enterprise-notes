@@ -1,6 +1,7 @@
 package database
 
 import (
+	"database/sql"
 	"fmt"
 
 	"github.com/CoryEvans2324/eds-enterprise-notes/models"
@@ -107,4 +108,64 @@ WHERE note.noteID = $1
 	}
 
 	return note, nil
+}
+
+// columns are in the order: noteID, name, content, status, ownerID, dueDate, delegatedUserID
+func (dbm *databasemanager) scanInNotes(rows *sql.Rows) ([]models.Note, error) {
+	var notes = make([]models.Note, 0)
+	for rows.Next() {
+		note := models.Note{
+			Owner:         &models.User{},
+			DelegatedUser: &models.User{},
+		}
+		err := rows.Scan(&note.NoteID, &note.Name, &note.Content, &note.Status, &note.Owner.UserID, &note.DueDate, &note.DelegatedUser.UserID)
+		if err != nil {
+			return nil, err
+		}
+
+		notes = append(notes, note)
+	}
+
+	return notes, nil
+}
+
+func (dbm *databasemanager) GetNotesByOwner(userID int) ([]models.Note, error) {
+	rows, err := dbm.db.Query(`
+SELECT noteID, name, content, status, ownerID, dueDate, delegatedUserID
+FROM note
+WHERE ownerID = $1`, userID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return dbm.scanInNotes(rows)
+}
+
+func (dbm *databasemanager) GetNotesByDelegatedUser(userID int) ([]models.Note, error) {
+	rows, err := dbm.db.Query(`
+SELECT noteID, name, content, status, ownerID, dueDate, delegatedUserID
+FROM note
+WHERE delegatedUserID = $1`, userID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return dbm.scanInNotes(rows)
+}
+
+func (dbm *databasemanager) GetNotesSharedWith(userId int) ([]models.Note, error) {
+	rows, err := dbm.db.Query(`
+SELECT note.noteID, note.name, note.content, note.status, note.ownerID, note.dueDate, note.delegatedUserID
+FROM notepermission
+INNER JOIN note ON note.noteID = notepermission.noteID
+WHERE notepermission.userID = $1
+`, userId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return dbm.scanInNotes(rows)
 }

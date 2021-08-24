@@ -26,6 +26,9 @@ type DatabaseManager interface {
 
 	CreateNote(note models.Note) (int, error)
 	GetNoteByID(noteID int) (*models.Note, error)
+	GetNotesByOwner(userID int) ([]models.Note, error)
+	GetNotesByDelegatedUser(userID int) ([]models.Note, error)
+	GetNotesSharedWith(userId int) ([]models.Note, error)
 
 	CreatePermission(noteID, userID int, permission string) error
 	RemovePermission(noteID, userID int) error

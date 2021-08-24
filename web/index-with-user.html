@@ -1,0 +1,37 @@
+{{ template "base" . }}
+
+{{ define "title" }}Home{{ end }}
+
+{{ define "head" }}{{ end }}
+
+{{ define "content" }}
+<div class="flex flex-col space-y-3">
+	<h1>Owned Notes</h1>
+	<ul>
+		{{ range $note := .OwnedNotes }}
+		<li><a href="/note/{{ $note.NoteID }}">{{ $note.Name }}</a></li>
+		{{ else }}
+		<li>There are no notes to display</li>
+		{{ end }}
+	</ul>
+	
+	<h1>Delegated Notes</h1>
+	<ul>
+		{{ range $note := .DelegatedNotes }}
+		<li>{{ $note.Name }}</li>
+		{{ else }}
+		<li>There are no notes to display</li>
+		{{ end }}
+	</ul>
+
+	<h1>Shared Notes</h1>
+	<ul>
+		{{ range $note := .SharedNotes }}
+		<li>{{ $note.Name }}</li>
+		{{ else }}
+		<li>There are no notes to display</li>
+		{{ end }}
+	</ul>
+</div>
+	
+{{ end }}
