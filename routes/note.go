@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/CoryEvans2324/eds-enterprise-notes/database"
 	"github.com/CoryEvans2324/eds-enterprise-notes/middleware"
@@ -31,10 +32,39 @@ func CreateNote(w http.ResponseWriter, r *http.Request) {
 
 	notetitle := r.FormValue("notetitle")
 	notebody := r.FormValue("notecontent")
-	// noteDateStr := r.FormValue("date")
-	// noteTimeStr := r.FormValue("time")
+	noteDateStr := r.FormValue("date")
+	noteTimeStr := r.FormValue("time")
 	assignedUser := r.FormValue("assigned")
 	sharedUserListStr := r.FormValue("sharedUsers")
+
+	var dueDate *time.Time
+	if noteDateStr != "" {
+		t, err := time.Parse("2006-01-02", noteDateStr)
+		if err != nil {
+			w.Write([]byte(err.Error()))
+			return
+		}
+		dueDate = &t
+	}
+
+	if noteTimeStr != "" {
+		nTime, err := time.Parse("15:04", noteTimeStr)
+		if err != nil {
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		// if duedate is nil then use today
+		if dueDate == nil {
+			t := time.Now()
+			td := time.Date(t.Year(), t.Month(), t.Day(), nTime.Hour(), nTime.Minute(), 0, 0, time.Local)
+			dueDate = &td
+		} else {
+			// add the two together
+			t := time.Date(dueDate.Year(), dueDate.Month(), dueDate.Day(), nTime.Hour(), nTime.Minute(), 0, 0, time.Local)
+			dueDate = &t
+		}
+	}
 
 	var sharedUsers = make([]sharedUser, 0)
 
@@ -78,6 +108,7 @@ func CreateNote(w http.ResponseWriter, r *http.Request) {
 		Content:       notebody,
 		Status:        "In progress",
 		Owner:         user,
+		DueDate:       dueDate,
 		DelegatedUser: delegatedUser,
 		SharedUsers:   permissions,
 	}
