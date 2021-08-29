@@ -7,7 +7,23 @@ import (
 
 	"github.com/CoryEvans2324/eds-enterprise-notes/database"
 	"github.com/CoryEvans2324/eds-enterprise-notes/middleware"
+	"github.com/CoryEvans2324/eds-enterprise-notes/models"
+	"github.com/gorilla/mux"
 )
+
+func UserView(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	username := vars["username"]
+
+	user, err := database.Mgr.GetUserByUsername(username)
+	if err != nil {
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	tmpl, _ := template.ParseFiles("web/user/user.html", "web/base.layout.html")
+	tmpl.Execute(w, struct{ User *models.User }{User: user})
+}
 
 func UserSignIn(w http.ResponseWriter, r *http.Request) {
 	tmpl, _ := template.ParseFiles("web/user/signin.html", "web/base.layout.html")

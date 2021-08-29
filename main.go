@@ -33,6 +33,7 @@ func main() {
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(cfg.Server.StaticFolder))))
 
 	userRouter := r.PathPrefix("/user").Subrouter()
+	userRouter.HandleFunc("/@{username}", routes.UserView)
 	userRouter.HandleFunc("/signin", routes.UserSignIn)
 	userRouter.HandleFunc("/signout", routes.UserSignOut)
 	userRouter.HandleFunc("/create", routes.UserSignUp)
