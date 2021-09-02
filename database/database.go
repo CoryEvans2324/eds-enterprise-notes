@@ -1,61 +1,46 @@
 package database
 
 import (
-	"database/sql"
-
 	"github.com/CoryEvans2324/eds-enterprise-notes/models"
-	_ "github.com/lib/pq"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 type DatabaseManager interface {
-	Close()
-	DropUserTable() error
-	CreateUserTable() error
-
-	DropNoteTable() error
-	CreateNoteTable() error
-
-	CreatePermissionTable() error
-	DropPermissionTable() error
-
-	CreateUser(username, password string) (int, error)
-	GetUserByID(userID int) (*models.User, error)
+	CreateUser(username, password string) (*models.User, error)
+	GetUserByID(userID uint) (*models.User, error)
 	GetUserByUsername(username string) (*models.User, error)
-	GetPasswordHash(username string) (string, error)
 	SearchForUsername(username string) ([]string, error)
 
-	CreateNote(note models.Note) (int, error)
-	GetNoteByID(noteID int) (*models.Note, error)
-	GetNotesByOwner(userID int) ([]models.Note, error)
-	GetNotesByDelegatedUser(userID int) ([]models.Note, error)
-	GetNotesSharedWith(userId int) ([]models.Note, error)
+	CreateNote(note *models.Note) (*models.Note, error)
+	UpdateNote(note *models.Note) (*models.Note, error)
+	GetNoteByID(noteID uint) (*models.Note, error)
+	GetNotesByOwner(user *models.User) ([]models.Note, error)
+	GetNotesByDelegatedUser(user *models.User) ([]models.Note, error)
+	GetNotesSharedWith(user *models.User) ([]models.Note, error)
 
-	CreatePermission(noteID, userID int, permission string) error
-	RemovePermission(noteID, userID int) error
-	UpdatePermission(noteID, userID int, permission string) error
+	CreatePermission(models.Permission) error
+	RemovePermission(models.Permission) error
+	UpdatePermission(models.Permission) error
 }
 
 type databasemanager struct {
-	db *sql.DB
+	db *gorm.DB
 }
 
 var Mgr DatabaseManager
+var db *gorm.DB
 
 func CreateDatabaseManager(dataSourceName string) error {
-	// sql.Open only returns an error on an unkown driver name
-	db, _ := sql.Open("postgres", dataSourceName)
-
-	if err := db.Ping(); err != nil {
+	newDB, err := gorm.Open(postgres.Open(dataSourceName), &gorm.Config{})
+	if err != nil {
 		return err
 	}
 
+	db = newDB
+
 	Mgr = &databasemanager{
-		db: db,
+		db: newDB,
 	}
-
 	return nil
-}
-
-func (dbm *databasemanager) Close() {
-	dbm.db.Close()
 }

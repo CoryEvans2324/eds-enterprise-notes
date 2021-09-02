@@ -36,26 +36,21 @@ func UserSignIn(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
-	phash, err := database.Mgr.GetPasswordHash(username)
-	if err != nil {
-		log.Println(err)
-		tmpl.Execute(w, nil)
-		return
-	}
-
-	if !database.CheckPasswordWithHash(password, phash) {
-		log.Println("password incorrect")
-		tmpl.Execute(w, nil)
-		return
-	}
-
 	user, err := database.Mgr.GetUserByUsername(username)
 	if err != nil {
 		log.Println(err)
 		tmpl.Execute(w, nil)
 		return
 	}
-	middleware.SetUser(w, user)
+
+	if !database.CheckPasswordWithHash(password, user.PasswordHash) {
+		log.Println("password incorrect")
+		tmpl.Execute(w, nil)
+		return
+	}
+	middleware.SetUser(w, &models.JWTUser{
+		UserID: user.ID,
+	})
 
 	http.Redirect(w, r, "/", http.StatusFound)
 }
@@ -74,19 +69,15 @@ func UserSignUp(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
-	userID, err := database.Mgr.CreateUser(username, password)
+	user, err := database.Mgr.CreateUser(username, password)
 	if err != nil {
 		tmpl.Execute(w, nil)
 		return
 	}
 
-	user, err := database.Mgr.GetUserByID(userID)
-	if err != nil {
-		tmpl.Execute(w, r)
-		return
-	}
-
-	middleware.SetUser(w, user)
+	middleware.SetUser(w, &models.JWTUser{
+		UserID: user.ID,
+	})
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 

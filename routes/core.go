@@ -21,19 +21,19 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	tmpl, _ := template.ParseFiles("web/index-with-user.html", "web/base.layout.html")
 
 	// find all notes relevant to the current user.
-	owned, err := database.Mgr.GetNotesByOwner(user.UserID)
+	owned, err := database.Mgr.GetNotesByOwner(user)
 	if err != nil {
 		tmpl.Execute(w, struct{ User *models.User }{User: user})
 		log.Println("owned: ", err)
 		return
 	}
-	delegated, err := database.Mgr.GetNotesByDelegatedUser(user.UserID)
+	delegated, err := database.Mgr.GetNotesByDelegatedUser(user)
 	if err != nil {
 		tmpl.Execute(w, struct{ User *models.User }{User: user})
 		log.Println("delegated: ", err)
 		return
 	}
-	shared, err := database.Mgr.GetNotesSharedWith(user.UserID)
+	shared, err := database.Mgr.GetNotesSharedWith(user)
 	if err != nil {
 		tmpl.Execute(w, struct{ User *models.User }{User: user})
 		log.Println("shared: ", err)

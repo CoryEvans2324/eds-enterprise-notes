@@ -1,16 +1,23 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Note struct {
-	NoteID        int          `json:"noteID"`
-	Name          string       `json:"name"`
-	Content       string       `json:"content"`
-	Status        string       `json:"status"`
-	DueDate       *time.Time   `json:"dueDate"`
-	Owner         *User        `json:"owner"`
-	DelegatedUser *User        `json:"delegatedUser"`
-	SharedUsers   []Permission `json:"sharedUsers"`
+	gorm.Model
+	ID              uint         `gorm:"primarykey autoIncrement"`
+	Name            string       `json:"name"`
+	Content         string       `json:"content"`
+	Status          string       `json:"status"`
+	DueDate         *time.Time   `json:"dueDate"`
+	OwnerID         *int         `json:"ownerID"`
+	Owner           *User        `json:"owner" gorm:"foreignKey:OwnerID"`
+	DelegatedUserID *int         `json:"delegatedUserID"`
+	DelegatedUser   *User        `json:"delegatedUser" gorm:"foreignKey:DelegatedUserID"`
+	SharedUsers     []Permission `json:"sharedUsers" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
 func (n *Note) FormattedDate() string {

@@ -80,7 +80,6 @@ func main() {
 
 	log.Println("shutting down")
 	srv.Shutdown(ctx)
-	database.Mgr.Close()
 
 	os.Exit(0)
 }

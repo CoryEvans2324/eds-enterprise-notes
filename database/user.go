@@ -4,65 +4,32 @@ import (
 	"github.com/CoryEvans2324/eds-enterprise-notes/models"
 )
 
-func (dbm *databasemanager) CreateUser(username, password string) (int, error) {
+func (dbm *databasemanager) CreateUser(username, password string) (*models.User, error) {
 	hash, _ := HashPassword(password)
-	row := dbm.db.QueryRow(`INSERT INTO noteUser (username, passwordHash) VALUES ($1, $2) RETURNING userID`, username, hash)
+	user := models.User{
+		Username:     username,
+		PasswordHash: hash,
+	}
+	result := dbm.db.Create(&user)
 
-	var userID int
-	err := row.Scan(&userID)
-
-	return userID, err
+	return &user, result.Error
 }
 
-func (dbm *databasemanager) GetUserByID(userID int) (*models.User, error) {
-	row := dbm.db.QueryRow(`SELECT username, userRole FROM noteUser WHERE userID = $1`, userID)
-
-	user := models.User{
-		UserID: userID,
-	}
-
-	err := row.Scan(&user.Username, &user.Role)
-
-	return &user, err
+func (dbm *databasemanager) GetUserByID(userID uint) (*models.User, error) {
+	var user models.User
+	result := dbm.db.First(&user, userID)
+	return &user, result.Error
 }
 
 func (dbm *databasemanager) GetUserByUsername(username string) (*models.User, error) {
-	row := dbm.db.QueryRow(`SELECT userID, userRole FROM noteUser WHERE username = $1`, username)
-
-	user := models.User{
-		Username: username,
-	}
-
-	err := row.Scan(&user.UserID, &user.Role)
-
-	return &user, err
-}
-
-func (dbm *databasemanager) GetPasswordHash(username string) (string, error) {
-	row := dbm.db.QueryRow(`SELECT passwordHash FROM noteUser WHERE username = $1`, username)
-
-	var hash string
-	err := row.Scan(&hash)
-
-	return hash, err
+	var user models.User
+	result := dbm.db.Where("Username = ?", username).First(&user)
+	return &user, result.Error
 }
 
 func (dbm *databasemanager) SearchForUsername(username string) ([]string, error) {
-	rows, err := dbm.db.Query(`SELECT username FROM noteUser WHERE LOWER(username) LIKE LOWER('%' || $1 || '%') LIMIT 10`, username)
-	if err != nil {
-		return nil, err
-	}
-
 	var usernames = make([]string, 0)
-	for rows.Next() {
-		var u string
-		err = rows.Scan(&u)
-		if err != nil {
-			return usernames, err
-		}
+	result := dbm.db.Model(&models.User{}).Where("LOWER(Username) LIKE LOWER '%' || ? || '%'", username).Pluck("Username", &usernames)
 
-		usernames = append(usernames, u)
-	}
-
-	return usernames, nil
+	return usernames, result.Error
 }

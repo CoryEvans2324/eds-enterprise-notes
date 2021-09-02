@@ -7,13 +7,6 @@ import (
 )
 
 func DebugResetDB(w http.ResponseWriter, r *http.Request) {
-	database.Mgr.DropUserTable()
-	database.Mgr.CreateUserTable()
-	database.Mgr.DropPermissionTable()
-	database.Mgr.CreatePermissionTable()
-	database.Mgr.DropNoteTable()
-	database.Mgr.CreateNoteTable()
-
 	w.Write([]byte("OK\n"))
 }
 
