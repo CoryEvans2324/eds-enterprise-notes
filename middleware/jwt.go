@@ -40,13 +40,13 @@ func JWTMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func GetUser(r *http.Request) *models.User {
+func GetUser(r *http.Request) *models.JWTUser {
 	ctx := r.Context()
 	user := ctx.Value(ContextUserKey{})
 	if user == nil {
 		return nil
 	}
-	userJwt := user.(*models.User)
+	userJwt := user.(*models.JWTUser)
 	return userJwt
 }
 

@@ -23,20 +23,20 @@ func (dbm *databasemanager) GetNoteByID(noteID uint) (*models.Note, error) {
 
 func (dbm *databasemanager) GetNotesByOwner(user *models.User) ([]models.Note, error) {
 	var notes = make([]models.Note, 0)
-	result := dbm.db.Where("Owner.UserID = ?", user.ID).Find(&notes)
+	result := dbm.db.Where("Owner_ID = ?", user.ID).Find(&notes)
 
 	return notes, result.Error
 }
 
 func (dbm *databasemanager) GetNotesByDelegatedUser(user *models.User) ([]models.Note, error) {
 	var notes = make([]models.Note, 0)
-	result := dbm.db.Where("DelegatedUser.UserID = ?", user.ID).Find(&notes)
+	result := dbm.db.Where("Delegated_User_ID = ?", user.ID).Find(&notes)
 
 	return notes, result.Error
 }
 
 func (dbm *databasemanager) GetNotesSharedWith(user *models.User) ([]models.Note, error) {
 	var notes = make([]models.Note, 0)
-	result := dbm.db.Joins("Note").Joins("Permission").Joins("User").Find(&notes, "User.UserID = ?", user.ID)
+	result := dbm.db.Model(&models.Note{}).Joins("INNER JOIN Permissions ON Permissions.Note_ID = Notes.ID").Find(&notes, "Permissions.User_ID = ?", user.ID)
 	return notes, result.Error
 }

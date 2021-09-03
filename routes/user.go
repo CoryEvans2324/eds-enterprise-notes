@@ -49,7 +49,9 @@ func UserSignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	middleware.SetUser(w, &models.JWTUser{
-		UserID: user.ID,
+		UserID:   user.ID,
+		Username: user.Username,
+		Role:     user.Role,
 	})
 
 	http.Redirect(w, r, "/", http.StatusFound)

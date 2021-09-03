@@ -23,6 +23,7 @@ func init() {
 	}
 	config.LoadConfig(cfgData)
 	database.CreateDatabaseManager(config.Get().Database.DataSourceName())
+	database.Mgr.AutoMigrate()
 }
 
 func main() {

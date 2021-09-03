@@ -11,8 +11,8 @@ import (
 )
 
 func Index(w http.ResponseWriter, r *http.Request) {
-	user := middleware.GetUser(r)
-	if user == nil {
+	jwtUser := middleware.GetUser(r)
+	if jwtUser == nil {
 		tmpl, _ := template.ParseFiles("web/index.html", "web/base.layout.html")
 		tmpl.Execute(w, nil)
 		return
@@ -21,6 +21,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	tmpl, _ := template.ParseFiles("web/index-with-user.html", "web/base.layout.html")
 
 	// find all notes relevant to the current user.
+	user, _ := database.Mgr.GetUserByID(jwtUser.UserID)
 	owned, err := database.Mgr.GetNotesByOwner(user)
 	if err != nil {
 		tmpl.Execute(w, struct{ User *models.User }{User: user})

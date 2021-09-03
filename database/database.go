@@ -7,6 +7,8 @@ import (
 )
 
 type DatabaseManager interface {
+	AutoMigrate()
+
 	CreateUser(username, password string) (*models.User, error)
 	GetUserByID(userID uint) (*models.User, error)
 	GetUserByUsername(username string) (*models.User, error)

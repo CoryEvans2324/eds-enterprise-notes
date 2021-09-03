@@ -14,6 +14,8 @@ type User struct {
 }
 
 type JWTUser struct {
-	UserID uint `json:"userID"`
+	UserID   uint   `json:"userID"`
+	Username string `json:"username"`
+	Role     string `json:"role"`
 	jwt.StandardClaims
 }
