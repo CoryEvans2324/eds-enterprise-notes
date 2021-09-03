@@ -9,63 +9,52 @@ import (
 func TestPermissions(t *testing.T) {
 	cfg := createConfig()
 	CreateDatabaseManager(cfg.Database.DataSourceName())
-
-	Mgr.DropNoteTable()
-	Mgr.CreateNoteTable()
-
-	Mgr.DropUserTable()
-	Mgr.CreateUserTable()
-
-	Mgr.DropPermissionTable()
-	Mgr.CreatePermissionTable()
+	ResetDB()
 
 	// create test users
-	ownerID, _ := Mgr.CreateUser("owner", "password")
-	otherID, _ := Mgr.CreateUser("other", "password")
+	owner, _ := Mgr.CreateUser("owner", "password")
+	other, _ := Mgr.CreateUser("other", "password")
 
 	// create test note
-	note := models.Note{
+	note := &models.Note{
 		Name:    "testing",
 		Content: "test",
-		Owner: &models.User{
-			UserID: ownerID,
-		},
-		Status: "In Progress",
+		Owner:   owner,
+		Status:  "In Progress",
 		SharedUsers: []models.Permission{
 			{
 				Permission: "viewer",
-				User: models.User{
-					UserID: otherID,
-				},
+				User:       *other,
 			},
 		},
 	}
 
-	noteID, err := Mgr.CreateNote(note)
+	note, err := Mgr.CreateNote(note)
 	if err != nil {
 		t.Errorf("Cannot create note: %v", err)
 	}
 
-	returnedNote, err := Mgr.GetNoteByID(noteID)
-	if err != nil {
-		t.Errorf("Cannot get note: %v", err)
-	}
-
 	// test permissions
-	if len(returnedNote.SharedUsers) == 0 {
+	if len(note.SharedUsers) == 0 {
 		t.Error("Note SharedUsers list is empty")
 	}
 
 	// remove the permission
-	err = Mgr.RemovePermission(noteID, otherID)
+	err = Mgr.RemovePermission(note.SharedUsers[0])
 	checkErrNil(t, err)
 
 	// create
-	err = Mgr.CreatePermission(noteID, otherID, "editor")
+	perm := models.Permission{
+		Permission: "editor",
+		User:       *note.Owner,
+		Note:       *note,
+	}
+	err = Mgr.CreatePermission(perm)
 	checkErrNil(t, err)
 
+	perm.Permission = "viewer"
 	// update
-	err = Mgr.UpdatePermission(noteID, otherID, "viewer")
+	err = Mgr.UpdatePermission(perm)
 	checkErrNil(t, err)
 
 }

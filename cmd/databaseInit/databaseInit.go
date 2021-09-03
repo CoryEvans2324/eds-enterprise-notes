@@ -29,13 +29,6 @@ func main() {
 	err := database.CreateDatabaseManager(cfg.Database.DataSourceName())
 	checkErrorNil(err)
 
-	checkErrorNil(database.Mgr.DropUserTable())
-	checkErrorNil(database.Mgr.CreateUserTable())
-	checkErrorNil(database.Mgr.DropNoteTable())
-	checkErrorNil(database.Mgr.CreateNoteTable())
-	checkErrorNil(database.Mgr.DropPermissionTable())
-	checkErrorNil(database.Mgr.CreatePermissionTable())
-
 	createFakeUsers()
 	createFakeNotes()
 }

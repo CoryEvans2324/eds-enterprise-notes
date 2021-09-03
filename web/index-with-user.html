@@ -10,7 +10,7 @@
 	<ul class="flex flex-col space-y-2">
 		{{ range $note := .OwnedNotes }}
 		<li>
-			<a href="/note/{{ $note.NoteID }}" class="flex space-x-2 bg-white rounded shadow p-4">
+			<a href="/note/{{ $note.ID }}" class="flex space-x-2 bg-white rounded shadow p-4">
 				<div class="flex-1 flex flex-col">
 					<h1 class="border-b border-black">{{ $note.Name }}</h1>
 					<p>{{ $note.Content }}</p>
@@ -29,7 +29,7 @@
 	<ul>
 		{{ range $note := .DelegatedNotes }}
 		<li>
-			<a href="/note/{{ $note.NoteID }}" class="flex space-x-2 bg-white rounded shadow p-4">
+			<a href="/note/{{ $note.ID }}" class="flex space-x-2 bg-white rounded shadow p-4">
 				<div class="flex-1 flex flex-col">
 					<h1 class="border-b border-black">{{ $note.Name }}</h1>
 					<p>{{ $note.Content }}</p>
@@ -48,7 +48,7 @@
 	<ul>
 		{{ range $note := .SharedNotes }}
 		<li>
-			<a href="/note/{{ $note.NoteID }}" class="flex space-x-2 bg-white rounded shadow p-4">
+			<a href="/note/{{ $note.ID }}" class="flex space-x-2 bg-white rounded shadow p-4">
 				<div class="flex-1 flex flex-col">
 					<h1 class="border-b border-black">{{ $note.Name }}</h1>
 					<p>{{ $note.Content }}</p>

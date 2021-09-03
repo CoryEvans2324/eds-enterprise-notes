@@ -5,17 +5,12 @@ import "testing"
 func TestUser(t *testing.T) {
 	cfg := createConfig()
 	CreateDatabaseManager(cfg.Database.DataSourceName())
+	ResetDB()
 
 	const dummyUsername = "testuser"
 	const dummyPassword = "testpasswd"
 
-	Mgr.DropUserTable()
-	Mgr.CreateUserTable()
-
-	userId, err := Mgr.CreateUser(dummyUsername, dummyPassword)
-	checkErrNil(t, err)
-
-	_, err = Mgr.GetUserByID(userId)
+	_, err := Mgr.CreateUser(dummyUsername, dummyPassword)
 	checkErrNil(t, err)
 
 	_, err = Mgr.GetUserByID(12345678)
@@ -35,28 +30,16 @@ func TestUser(t *testing.T) {
 func TestUserPasswords(t *testing.T) {
 	cfg := createConfig()
 	CreateDatabaseManager(cfg.Database.DataSourceName())
+	ResetDB()
 
 	const dummyUsername = "testuser"
 	const dummyPassword = "testpasswd"
 
-	Mgr.DropUserTable()
-	Mgr.CreateUserTable()
-
-	userId, _ := Mgr.CreateUser(dummyUsername, dummyPassword)
-
-	user, _ := Mgr.GetUserByID(userId)
+	user, _ := Mgr.CreateUser(dummyUsername, dummyPassword)
 
 	// Check password hash
 	// Correct username & password
-	hash, err := Mgr.GetPasswordHash(user.Username)
-	checkErrNil(t, err)
-	if !CheckPasswordWithHash(dummyPassword, hash) {
-		t.Errorf("Incorrect hash %s for password %s", hash, dummyPassword)
-	}
-
-	// Username doesn't exist
-	_, err = Mgr.GetPasswordHash("ThisUsernameShouldNotExist")
-	if err == nil {
-		t.Error("GetPasswordHash should have returned an error as no user exist")
+	if !CheckPasswordWithHash(dummyPassword, user.PasswordHash) {
+		t.Errorf("Incorrect hash %s for password %s", user.PasswordHash, dummyPassword)
 	}
 }

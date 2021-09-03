@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/CoryEvans2324/eds-enterprise-notes/config"
+	"github.com/CoryEvans2324/eds-enterprise-notes/models"
 )
 
 func checkErrNil(t *testing.T, err error) {
@@ -26,6 +27,16 @@ server:
 `)
 	config.LoadConfig(cfgData)
 	return *config.Get()
+}
+
+func ResetDB() {
+	db.Exec("DROP TABLE IF EXISTS permissions")
+	db.Exec("DROP TABLE IF EXISTS notes")
+	db.Exec("DROP TABLE IF EXISTS users")
+
+	db.AutoMigrate(&models.User{})
+	db.AutoMigrate(&models.Note{})
+	db.AutoMigrate(&models.Permission{})
 }
 
 func TestCreateDatabaseManager(t *testing.T) {

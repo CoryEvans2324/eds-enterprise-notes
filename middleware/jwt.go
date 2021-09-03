@@ -27,10 +27,10 @@ func JWTMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		token, err := jwt.ParseWithClaims(cookie.Value, &models.User{}, func(t *jwt.Token) (interface{}, error) {
+		token, err := jwt.ParseWithClaims(cookie.Value, &models.JWTUser{}, func(t *jwt.Token) (interface{}, error) {
 			return config.Get().SecretAsBytes(), nil
 		})
-		claims, ok := token.Claims.(*models.User)
+		claims, ok := token.Claims.(*models.JWTUser)
 		if !ok || !token.Valid || err != nil {
 			log.Println("[JWT ERROR]", err.Error())
 		}
@@ -40,21 +40,21 @@ func JWTMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func GetUser(r *http.Request) *models.User {
+func GetUser(r *http.Request) *models.JWTUser {
 	ctx := r.Context()
 	user := ctx.Value(ContextUserKey{})
 	if user == nil {
 		return nil
 	}
-	userJwt := user.(*models.User)
+	userJwt := user.(*models.JWTUser)
 	return userJwt
 }
 
-func SetUser(w http.ResponseWriter, jwtUser *models.User) {
+func SetUser(w http.ResponseWriter, jwtUser *models.JWTUser) {
 	SetJWTCookie(w, jwtUser)
 }
 
-func SetJWTCookie(w http.ResponseWriter, jwtUser *models.User) {
+func SetJWTCookie(w http.ResponseWriter, jwtUser *models.JWTUser) {
 	if jwtUser == nil {
 		http.SetCookie(
 			w,

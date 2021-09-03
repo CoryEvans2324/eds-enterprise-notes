@@ -23,10 +23,10 @@ type sharedUser struct {
 func CreateNote(w http.ResponseWriter, r *http.Request) {
 	tmpl, _ := template.ParseFiles("web/note/create.html", "web/base.layout.html")
 
-	user := middleware.GetUser(r)
+	jwtUser := middleware.GetUser(r)
 
 	if r.Method == http.MethodGet {
-		tmpl.Execute(w, struct{ User *models.User }{User: user})
+		tmpl.Execute(w, struct{ User *models.JWTUser }{User: jwtUser})
 		return
 	}
 
@@ -103,7 +103,8 @@ func CreateNote(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	note := models.Note{
+	user, _ := database.Mgr.GetUserByID(jwtUser.UserID)
+	note := &models.Note{
 		Name:          notetitle,
 		Content:       notebody,
 		Status:        "In progress",
@@ -113,13 +114,13 @@ func CreateNote(w http.ResponseWriter, r *http.Request) {
 		SharedUsers:   permissions,
 	}
 
-	noteID, err := database.Mgr.CreateNote(note)
+	note, err = database.Mgr.CreateNote(note)
 	if err != nil {
 		w.Write([]byte(err.Error()))
 		return
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("/note/%d", noteID), http.StatusFound)
+	http.Redirect(w, r, fmt.Sprintf("/note/%d", note.ID), http.StatusFound)
 }
 
 func GetNote(w http.ResponseWriter, r *http.Request) {
@@ -132,7 +133,7 @@ func GetNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	note, err := database.Mgr.GetNoteByID(id)
+	note, err := database.Mgr.GetNoteByID(uint(id))
 	if err != nil {
 		w.Write([]byte(err.Error()))
 		return
@@ -145,7 +146,7 @@ func GetNote(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tmpl.Execute(w, struct {
-		User *models.User
+		User *models.JWTUser
 		Note *models.Note
 	}{
 		User: middleware.GetUser(r),

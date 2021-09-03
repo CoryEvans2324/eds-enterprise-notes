@@ -23,6 +23,7 @@ func init() {
 	}
 	config.LoadConfig(cfgData)
 	database.CreateDatabaseManager(config.Get().Database.DataSourceName())
+	database.Mgr.AutoMigrate()
 }
 
 func main() {
@@ -80,7 +81,6 @@ func main() {
 
 	log.Println("shutting down")
 	srv.Shutdown(ctx)
-	database.Mgr.Close()
 
 	os.Exit(0)
 }
