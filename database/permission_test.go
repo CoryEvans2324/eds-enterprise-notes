@@ -9,6 +9,7 @@ import (
 func TestPermissions(t *testing.T) {
 	cfg := createConfig()
 	CreateDatabaseManager(cfg.Database.DataSourceName())
+	ResetDB()
 
 	// create test users
 	owner, _ := Mgr.CreateUser("owner", "password")
@@ -33,24 +34,20 @@ func TestPermissions(t *testing.T) {
 		t.Errorf("Cannot create note: %v", err)
 	}
 
-	returnedNote, err := Mgr.GetNoteByID(note.ID)
-	if err != nil {
-		t.Errorf("Cannot get note: %v", err)
-	}
-
 	// test permissions
-	if len(returnedNote.SharedUsers) == 0 {
+	if len(note.SharedUsers) == 0 {
 		t.Error("Note SharedUsers list is empty")
 	}
 
 	// remove the permission
-	err = Mgr.RemovePermission(returnedNote.SharedUsers[0])
+	err = Mgr.RemovePermission(note.SharedUsers[0])
 	checkErrNil(t, err)
 
 	// create
 	perm := models.Permission{
 		Permission: "editor",
 		User:       *note.Owner,
+		Note:       *note,
 	}
 	err = Mgr.CreatePermission(perm)
 	checkErrNil(t, err)

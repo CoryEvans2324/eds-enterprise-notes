@@ -16,8 +16,8 @@ type Note struct {
 	OwnerID         *int         `json:"ownerID"`
 	Owner           *User        `json:"owner" gorm:"foreignKey:OwnerID"`
 	DelegatedUserID *int         `json:"delegatedUserID"`
-	DelegatedUser   *User        `json:"delegatedUser" gorm:"foreignKey:DelegatedUserID"`
-	SharedUsers     []Permission `json:"sharedUsers" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	DelegatedUser   *User        `json:"delegatedUser" gorm:"foreignKey:DelegatedUserID;default:NULL"`
+	SharedUsers     []Permission `json:"sharedUsers" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;foriegnKey:NoteID"`
 }
 
 func (n *Note) FormattedDate() string {
