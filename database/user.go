@@ -29,7 +29,7 @@ func (dbm *databasemanager) GetUserByUsername(username string) (*models.User, er
 
 func (dbm *databasemanager) SearchForUsername(username string) ([]string, error) {
 	var usernames = make([]string, 0)
-	result := dbm.db.Model(&models.User{}).Where("LOWER(Username) LIKE LOWER '%' || ? || '%'", username).Pluck("Username", &usernames)
+	result := dbm.db.Model(&models.User{}).Where("LOWER(Username) LIKE LOWER('%' || ? || '%')", username).Pluck("Username", &usernames)
 
 	return usernames, result.Error
 }
