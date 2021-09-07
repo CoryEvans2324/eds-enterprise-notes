@@ -1,30 +1,38 @@
-package middleware
+package main
 
 import (
-	"net/http"
-	"net/http/httptest"
-	"testing"
+    "net/http"
+    "net/http/httptest"
+    "testing"
 
-	"github.com/gorilla/mux"
+    "github.com/gorilla/mux"
+    "github.com/stretchr/testify/assert"
 )
 
-func TestJWTMiddleware(t *testing.T) {
-	router := mux.NewRouter()
+Testuser := models.JWTUser {
+	UserID: 01,
+	Username: "testname",
+	Role: "testrole",
+}
 
-	// The middleware we are testing
-	router.Use(JWTMiddleware)
+func Router() *mux.Router {
+    router := mux.NewRouter()
+	router.HandleFunc("/getuser", GetUser).Methods("GET")
+    router.HandleFunc("/setuser", SetUser).Methods("POST")
+	//todo - JWTMiddleware function tests, add more conditions to bellow tests, subdivide to ensure they can be ran in isolation to eachother?
+    return router
+}
 
-	// create a simple route that doesn't do much
-	router.HandleFunc("/testing", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("OK"))
-	})
+func TestGetUserNil(t *testing.T) {
+	request, _ := http.NewRequest("GET", "/getuser", nil)
+    response := httptest.NewRecorder()
+    Router().ServeHTTP(response, request)
+	assert.Equal(t, nil, response.Username, "Username should be Nil")
+}
 
-	request, _ := http.NewRequest("GET", "/testing", nil)
-	response := httptest.NewRecorder()
-
-	// Simple get request with nothing set
-	router.ServeHTTP(response, request)
-
-	// TODO: Test all other functions/code
-
+func TestSetUser(t *testing.T) {
+	request, _ := http.NewRequest("POST", "/setuser", Testuser)
+    response := httptest.NewRecorder()
+    Router().ServeHTTP(response, request)
+	assert.Equal(t, "testuser", response.Username, "Username should be testuser")
 }
