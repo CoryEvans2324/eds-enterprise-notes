@@ -15,6 +15,11 @@ func (dbm *databasemanager) UpdateNote(note *models.Note) (*models.Note, error) 
 	return note, result.Error
 }
 
+func (dbm *databasemanager) DeleteNote(note *models.Note) error {
+	tx := dbm.db.Delete(note)
+	return tx.Error
+}
+
 func (dbm *databasemanager) GetNoteByID(noteID uint) (*models.Note, error) {
 	var note models.Note
 	result := dbm.db.Preload("SharedUsers.User").Preload(clause.Associations).First(&note, noteID)

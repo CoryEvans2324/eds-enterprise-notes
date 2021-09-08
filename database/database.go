@@ -16,6 +16,7 @@ type DatabaseManager interface {
 
 	CreateNote(note *models.Note) (*models.Note, error)
 	UpdateNote(note *models.Note) (*models.Note, error)
+	DeleteNote(note *models.Note) error
 	GetNoteByID(noteID uint) (*models.Note, error)
 	GetNotesByOwner(user *models.User) ([]models.Note, error)
 	GetNotesByDelegatedUser(user *models.User) ([]models.Note, error)

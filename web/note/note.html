@@ -40,8 +40,8 @@
 	</ul>
 
 	<div class="grid grid-cols-2 gap-2">
-		<button class=" px-4 py-2 rounded-sm shadow-sm font-semibold bg-red-500">Delete</button>
-		<button class=" px-4 py-2 rounded-sm shadow-sm font-semibold bg-green-500">Edit</button>
+		<button hx-delete="/note/{{ .Note.ID }}" class="px-4 py-2 rounded-sm shadow-sm font-semibold bg-red-500">Delete</button>
+		<button class="px-4 py-2 rounded-sm shadow-sm font-semibold bg-green-500">Edit</button>
 		<button class="col-span-full px-4 py-2 rounded-sm shadow-sm font-semibold bg-blue-600 text-white">Mark Complete</button>
 	</div>
 </div>

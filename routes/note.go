@@ -139,7 +139,51 @@ func GetNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if r.Method == http.MethodDelete {
+		w.Header().Set("HX-Redirect", "/")
+		database.Mgr.DeleteNote(note)
+
+		return
+	}
+
 	tmpl, err := template.ParseFiles("web/note/note.html", "web/base.layout.html")
+	if err != nil {
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	tmpl.Execute(w, struct {
+		User *models.JWTUser
+		Note *models.Note
+	}{
+		User: middleware.GetUser(r),
+		Note: note,
+	})
+}
+
+func EditNote(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	idStr := vars["id"]
+
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	note, err := database.Mgr.GetNoteByID(uint(id))
+	if err != nil {
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	if r.Method == http.MethodPost {
+		note.Content = r.FormValue("content")
+
+		return
+	}
+
+	tmpl, err := template.ParseFiles("web/note/edit.html", "web/base.layout.html")
 	if err != nil {
 		w.Write([]byte(err.Error()))
 		return
