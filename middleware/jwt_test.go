@@ -1,25 +1,32 @@
 package middleware
 
 import (
-    "net/http"
-    "net/http/httptest"
-    "testing"
+	"net/http"
+	"net/http/httptest"
+	"testing"
 
-    "github.com/gorilla/mux"
-    "github.com/stretchr/testify/assert"
 	"github.com/CoryEvans2324/eds-enterprise-notes/models"
 	"github.com/golang-jwt/jwt"
+	"github.com/gorilla/mux"
+	"github.com/stretchr/testify/assert"
 )
 
 type User models.JWTUser
 
+var testuser = User{
+	UserID:         01,
+	Username:       "testname",
+	Role:           "testrole",
+	StandardClaims: jwt.StandardClaims{},
+}
+
 var Set bool
 
 func Router() *mux.Router {
-    router := mux.NewRouter()
-	router.HandleFunc("/getuser", GetUser).Methods("GET")
-    router.HandleFunc("/setuser", SetUser).Methods("POST")
-    return router
+	router := mux.NewRouter()
+	router.Handle("/getuser", GetUser()).Methods("GET")
+	router.HandleFunc("/setuser", SetUser(testuser)).Methods("POST")
+	return router
 }
 
 func TestCookie(t *testing.T) {
@@ -32,28 +39,27 @@ func TestSigningMethod(t *testing.T) {
 
 func TestGetUser(t *testing.T) {
 	request, _ := http.NewRequest("GET", "/getuser", nil)
-    response := httptest.NewRecorder()
-    Router().ServeHTTP(response, request)
+	response := httptest.NewRecorder()
+	Router().ServeHTTP(response, request)
+	var newuser User
+	newuser == response.Body
 	if Set == false {
-		assert.Equal(t, nil, response.Username, "Username should be Nil")
+		assert.Equal(t, nil, newuser.Username, "Username should be Nil")
 	} else {
-		assert.Equal(t, "testuser", response.Username, "Username should be testuser")
-		assert.Equal(t, 01, response.UserID, "UserID should be 01")
-		assert.Equal(t, "testrole", response.Role, "Role should be testrole")
+		assert.Equal(t, "testuser", newuser.Username, "Username should be testuser")
+		assert.Equal(t, 01, newuser.UserID, "UserID should be 01")
+		assert.Equal(t, "testrole", newuser.Role, "Role should be testrole")
 	}
 }
 
 func TestSetUser(t *testing.T) {
-	testuser := User{
-		UserID: 01,
-		Username: "testname",
-		Role: "testrole",
-	}
 	request, _ := http.NewRequest("POST", "/setuser", testuser)
-    response := httptest.NewRecorder()
-    Router().ServeHTTP(response, request)
-	assert.Equal(t, "testuser", response.Username, "Username should be testuser")
-	assert.Equal(t, 01, response.UserID, "UserID should be 01")
-	assert.Equal(t, "testrole", response.Role, "Role should be testrole")
+	response := httptest.NewRecorder()
+	Router().ServeHTTP(response, request)
+	var newuser User
+	newuser == response.Body
+	assert.Equal(t, "testuser", newuser.Username, "Username should be testuser")
+	assert.Equal(t, 01, newuser.UserID, "UserID should be 01")
+	assert.Equal(t, "testrole", newuser.Role, "Role should be testrole")
 	Set = true
 }
