@@ -7,13 +7,11 @@ import (
 
     "github.com/gorilla/mux"
     "github.com/stretchr/testify/assert"
+	"github.com/CoryEvans2324/eds-enterprise-notes/models"
+	"github.com/golang-jwt/jwt"
 )
 
-Testuser := models.JWTUser {
-	UserID: 01,
-	Username: "testname",
-	Role: "testrole",
-}
+type User models.JWTUser
 
 var Set bool
 
@@ -29,7 +27,7 @@ func TestCookie(t *testing.T) {
 }
 
 func TestSigningMethod(t *testing.T) {
-	assert.Equal(t, "jwt.SigningMethodHS256", string(jwt.SigningMethodHS256), "Signing Method should be jwt.SigningMethodHS256")
+	assert.Equal(t, jwt.SigningMethodHS256, JWT_SIGNING_METHOD, "Signing Method should be jwt.SigningMethodHS256")
 }
 
 func TestGetUser(t *testing.T) {
@@ -46,11 +44,16 @@ func TestGetUser(t *testing.T) {
 }
 
 func TestSetUser(t *testing.T) {
-	request, _ := http.NewRequest("POST", "/setuser", Testuser)
+	testuser := User{
+		UserID: 01,
+		Username: "testname",
+		Role: "testrole",
+	}
+	request, _ := http.NewRequest("POST", "/setuser", testuser)
     response := httptest.NewRecorder()
     Router().ServeHTTP(response, request)
 	assert.Equal(t, "testuser", response.Username, "Username should be testuser")
 	assert.Equal(t, 01, response.UserID, "UserID should be 01")
 	assert.Equal(t, "testrole", response.Role, "Role should be testrole")
-	Set := true
+	Set = true
 }
