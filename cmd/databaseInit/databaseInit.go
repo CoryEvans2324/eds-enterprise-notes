@@ -31,6 +31,7 @@ func main() {
 	err := database.CreateDatabaseManager(cfg.Database.DataSourceName())
 	checkErrorNil(err)
 
+	database.Mgr.DropTables()
 	database.Mgr.AutoMigrate()
 
 	createFakeUsers()
@@ -68,7 +69,7 @@ func createFakeUsers() {
 
 func createFakeNotes() {
 	now := time.Now()
-	owner, _ := database.Mgr.GetUserByUsername("Allen")
+	owner, _ := database.Mgr.GetUserByUsername("Alleen")
 	note := models.Note{
 		Name:    "Get the washing in",
 		Content: "Mum wouldn't be happy",

@@ -34,7 +34,7 @@ A database needs to be created named `testing` owned by the postgres user `testi
 These credentials can be changed in the `database/database_test.go` file in the function `createConfig()`.
 
 ## Setting up the database for the first time.
-TODO
+Run `go run cmd/databaseInit/databaseInit.go`
 
 ## Accessing the services
 The web service (the go application) is listening on port 8000 for http requests.

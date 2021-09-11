@@ -8,6 +8,7 @@ import (
 
 type DatabaseManager interface {
 	AutoMigrate()
+	DropTables()
 
 	CreateUser(username, password string) (*models.User, error)
 	GetUserByID(userID uint) (*models.User, error)
