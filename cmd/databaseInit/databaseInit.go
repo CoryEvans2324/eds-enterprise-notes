@@ -3,9 +3,11 @@ package main
 import (
 	"io/ioutil"
 	"log"
+	"time"
 
 	"github.com/CoryEvans2324/eds-enterprise-notes/config"
 	"github.com/CoryEvans2324/eds-enterprise-notes/database"
+	"github.com/CoryEvans2324/eds-enterprise-notes/models"
 )
 
 func init() {
@@ -42,7 +44,6 @@ func main() {
 
 func createFakeUsers() {
 	users := []string{
-		"cory",
 		"Alleen",
 		"Demeter",
 		"Bamby",
@@ -71,5 +72,14 @@ func createFakeUsers() {
 }
 
 func createFakeNotes() {
+	now := time.Now()
+	owner, _ := database.Mgr.GetUserByUsername("Allen")
+	note := models.Note{
+		Name:    "Get the washing in",
+		Content: "Mum wouldn't be happy",
+		DueDate: &now,
+		Owner:   owner,
+	}
 
+	database.Mgr.CreateNote(note)
 }
