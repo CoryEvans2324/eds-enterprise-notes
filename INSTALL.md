@@ -26,6 +26,13 @@ For simplicity, the configuration files are already predefined and included in t
 
 Since this project is just for educational purposes and only deployed locally, there shouldn't be any issue with this.
 
+## For the database unit tests
+A user in postgres needs to be setup with the username `testing` and the password `testing`. Make sure the 'Can login` flag is set on the new user.
+
+A database needs to be created named `testing` owned by the postgres user `testing`.
+
+These credentials can be changed in the `database/database_test.go` file in the function `createConfig()`.
+
 ## Setting up the database for the first time.
 TODO
 
