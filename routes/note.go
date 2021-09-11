@@ -123,21 +123,25 @@ func CreateNote(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fmt.Sprintf("/note/%d", note.ID), http.StatusFound)
 }
 
-func GetNote(w http.ResponseWriter, r *http.Request) {
+func retrieveNoteFromRequest(r *http.Request) *models.Note {
 	vars := mux.Vars(r)
 	idStr := vars["id"]
 
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		w.Write([]byte(err.Error()))
-		return
+		return nil
 	}
 
 	note, err := database.Mgr.GetNoteByID(uint(id))
 	if err != nil {
-		w.Write([]byte(err.Error()))
-		return
+		return nil
 	}
+
+	return note
+}
+
+func GetNote(w http.ResponseWriter, r *http.Request) {
+	note := retrieveNoteFromRequest(r)
 
 	if r.Method == http.MethodDelete {
 		w.Header().Set("HX-Redirect", "/")
@@ -162,20 +166,7 @@ func GetNote(w http.ResponseWriter, r *http.Request) {
 }
 
 func EditNote(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	idStr := vars["id"]
-
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		w.Write([]byte(err.Error()))
-		return
-	}
-
-	note, err := database.Mgr.GetNoteByID(uint(id))
-	if err != nil {
-		w.Write([]byte(err.Error()))
-		return
-	}
+	note := retrieveNoteFromRequest(r)
 
 	if r.Method == http.MethodPost {
 		note.Content = r.FormValue("content")
@@ -196,4 +187,18 @@ func EditNote(w http.ResponseWriter, r *http.Request) {
 		User: middleware.GetUser(r),
 		Note: note,
 	})
+}
+
+func CompleteNote(w http.ResponseWriter, r *http.Request) {
+	note := retrieveNoteFromRequest(r)
+
+	if note.Status == "complete" {
+		note.Status = "in progress"
+	} else {
+		note.Status = "complete"
+	}
+
+	database.Mgr.UpdateNote(note)
+
+	w.Header().Set("HX-Refresh", "true")
 }

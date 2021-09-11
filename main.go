@@ -47,6 +47,7 @@ func main() {
 	noteRouter.HandleFunc("/create", routes.CreateNote)
 	noteRouter.HandleFunc("/{id:[0-9]+}", routes.GetNote)
 	noteRouter.HandleFunc("/{id:[0-9]+}/edit", routes.EditNote)
+	noteRouter.HandleFunc("/{id:[0-9]+}/status", routes.CompleteNote)
 
 	debugRouter := r.PathPrefix("/debug").Subrouter()
 	debugRouter.HandleFunc("/reset", routes.DebugResetDB)
