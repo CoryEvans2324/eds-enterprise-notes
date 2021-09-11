@@ -24,8 +24,8 @@ var Set bool
 
 func Router() *mux.Router {
 	router := mux.NewRouter()
-	router.Handle("/getuser", GetUser()).Methods("GET")
-	router.HandleFunc("/setuser", SetUser(testuser)).Methods("POST")
+	router.HandleFunc("/getuser", HandleGet).Methods("GET")
+	router.HandleFunc("/setuser", HandleSet).Methods("POST")
 	return router
 }
 
@@ -35,6 +35,13 @@ func TestCookie(t *testing.T) {
 
 func TestSigningMethod(t *testing.T) {
 	assert.Equal(t, jwt.SigningMethodHS256, JWT_SIGNING_METHOD, "Signing Method should be jwt.SigningMethodHS256")
+}
+
+func HandleGet(w http.ResponseWriter, r *http.Request){
+	GetUser(r)
+}
+func HandleSet(w http.ResponseWriter, r *http.Request){
+	SetUser(w, testuser)
 }
 
 func TestGetUser(t *testing.T) {
